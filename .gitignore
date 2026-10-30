@@ -1,0 +1,7 @@
+node_modules
+.next
+out
+publish
+next-env.d.ts
+*.tsbuildinfo
+AGENTS.md

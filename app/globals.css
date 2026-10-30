@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* Brand palette — blue sampled from the official logo. Change here + lib/palette.ts */
+@theme {
+  --color-cobalt: #073f92;
+  --color-cobalt-deep: #052c68;
+  --color-cream: #f7f2e9;
+  --color-sand: #e6dac4;
+  --color-chocolate: #5b3a29;
+
+  --font-display: var(--font-anton), "Anton", Impact, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  background: var(--color-cobalt-deep);
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-cobalt);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-cobalt);
+  color: var(--color-cream);
+}
+
+/* Film-grain texture laid over the whole page */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-2%, 6%); }
+  80% { transform: translate(5%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Paper texture for cream sections */
+.paper {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(7, 63, 146, 0.05), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(230, 218, 196, 0.8), transparent 45%),
+    repeating-linear-gradient(0deg, rgba(19, 42, 102, 0.018) 0 1px, transparent 1px 3px);
+}
+
+/* Woven texture for cobalt sections, echoing the reference swatch */
+.weave {
+  background-color: var(--color-cobalt);
+  background-image:
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.08), transparent 50%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 5px);
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  -webkit-text-fill-color: transparent;
+}
+
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+@media (pointer: fine) {
+  .cursor-none-fine, .cursor-none-fine * { cursor: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .grain::after { animation: none; }
+}
