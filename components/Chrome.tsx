@@ -63,6 +63,7 @@ export function Nav() {
   const cart = useStore((s) => s.cart);
   const qty = cart.vanilla + cart.chocolate;
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 40);
@@ -96,6 +97,7 @@ export function Nav() {
             </li>
           ))}
         </ul>
+        <div className="flex items-center gap-2">
         <Magnetic
           onClick={() => store.set({ cartOpen: true })}
           className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
@@ -112,7 +114,43 @@ export function Nav() {
             {qty}
           </motion.span>
         </Magnetic>
+        {/* phones and tablets: the section links live behind a menu button */}
+        <button
+          type="button"
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((o) => !o)}
+          className={`grid h-9 w-9 place-items-center rounded-full lg:hidden ${scrolled ? "bg-cobalt text-cream" : "bg-cream text-cobalt"}`}
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+          </svg>
+        </button>
+        </div>
       </nav>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.ul
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease }}
+            className="mx-auto mt-2 flex max-w-[1400px] flex-col rounded-[1.75rem] bg-cream/95 p-3 text-cobalt shadow-[0_20px_50px_-20px_rgba(5,44,104,0.5)] backdrop-blur-md lg:hidden"
+          >
+            {links.map(([label, href]) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-2xl px-4 py-3 font-display text-2xl uppercase hover:bg-cobalt/10"
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
