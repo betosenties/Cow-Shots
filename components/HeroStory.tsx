@@ -138,7 +138,7 @@ export default function HeroStory() {
                 </span>
                 Desliza
               </span>
-              <a href="#shop">
+              <a href="#producto">
                 <Magnetic className="rounded-full bg-cream px-7 py-4 text-xs font-semibold uppercase tracking-[0.25em] text-cobalt">
                   Comprar · {formatPrice(pack.price)} →
                 </Magnetic>
