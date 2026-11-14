@@ -3,6 +3,7 @@
 // `pending` are still waiting for confirmed data from the team.
 
 import type { Flavor } from "./store";
+import { palette } from "./palette";
 
 export const brand = {
   name: "COW SHOTS",
@@ -19,9 +20,10 @@ export const pack = {
   currency: "MXN",
 };
 
-export const flavors: Record<Flavor, { name: string }> = {
-  vanilla: { name: "Vainilla" },
-  chocolate: { name: "Chocolate" },
+export const flavors: Record<Flavor, { name: string; image: string; milk: string }> = {
+  vanilla: { name: "Vainilla", image: "brand/bottle-vainilla.jpg", milk: palette.vanilla },
+  chocolate: { name: "Chocolate", image: "brand/bottle-chocolate.jpg", milk: palette.chocolate },
+  strawberry: { name: "Fresa", image: "brand/bottle-fresa.jpg", milk: palette.strawberry },
 };
 
 export const formatPrice = (n: number) =>
@@ -48,8 +50,8 @@ export const story = [
   },
   {
     n: "04",
-    kicker: "Dos sabores",
-    title: "Vainilla y Chocolate.",
+    kicker: "Tres sabores",
+    title: "Vainilla, Chocolate y Fresa.",
     body: "Paquetes de 3 shots de 60 mL. Fáciles de llevar al gimnasio, a la escuela o a donde vayas.",
   },
 ];

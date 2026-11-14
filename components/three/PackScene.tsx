@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
+import { flavors } from "@/lib/content";
 import { palette } from "@/lib/palette";
 import { packFrame as pack, store } from "@/lib/store";
 import { BottleModel, HEIGHT as BOTTLE_H, useLabelTexture } from "./ShotScene";
@@ -274,7 +275,7 @@ function PackRig() {
     const bottomHover = BOX.h / 2 + 0.4;
     const y = lerp(lerp(-BOTTLE_H / 2, bottomHover, smooth(0.3, 0.42, p)), bottomPacked, smooth(0.46, 0.62, p));
     const spin = (1 - smooth(0.3, 0.46, p)) * (t * 0.5);
-    milk.set(store.get().flavor === "chocolate" ? palette.chocolate : palette.vanilla);
+    milk.set(flavors[store.get().flavor].milk);
     bottles.forEach((b, i) => {
       const g = b.current;
       if (!g) return;

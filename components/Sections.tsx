@@ -40,7 +40,7 @@ function Eyebrow({ children, light = false }: { children: React.ReactNode; light
 /* ---------------- marquee band ---------------- */
 
 export function Marquee({ inverted = false }: { inverted?: boolean }) {
-  const words = ["Calostro bovino", "✦", "Vainilla", "✦", "Chocolate", "✦", "Listo para tomar", "✦", "Fuel. Grow. Perform.", "✦"];
+  const words = ["Calostro bovino", "✦", "Vainilla", "✦", "Chocolate", "✦", "Fresa", "✦", "Listo para tomar", "✦", "Fuel. Grow. Perform.", "✦"];
   return (
     <div
       className={`overflow-hidden border-y py-5 ${
@@ -87,6 +87,13 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
   );
 }
 
+// background of the active flavour pill
+const pillBg: Record<Flavor, string> = {
+  vanilla: "bg-cobalt",
+  chocolate: "bg-chocolate",
+  strawberry: "bg-strawberry",
+};
+
 export function Product() {
   const flavor = useStore((s) => s.flavor);
   const [qty, setQty] = useState(1);
@@ -111,7 +118,7 @@ export function Product() {
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.img
                   key={flavor}
-                  src={choco ? "brand/bottle-chocolate.jpg" : "brand/bottle-vainilla.jpg"}
+                  src={flavors[flavor].image}
                   alt={`Botella de COW SHOTS sabor ${flavors[flavor].name}`}
                   initial={{ opacity: 0, scale: 1.04 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -138,7 +145,7 @@ export function Product() {
                   {flavor === f && (
                     <motion.span
                       layoutId="flavor-pill"
-                      className={`absolute inset-0 rounded-full ${f === "chocolate" ? "bg-chocolate" : "bg-cobalt"}`}
+                      className={`absolute inset-0 rounded-full ${pillBg[f]}`}
                       transition={{ type: "spring", stiffness: 300, damping: 28 }}
                     />
                   )}

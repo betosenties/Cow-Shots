@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from "react";
 
-export type Flavor = "vanilla" | "chocolate";
+export type Flavor = "vanilla" | "chocolate" | "strawberry";
 
 type State = { flavor: Flavor; cart: Record<Flavor, number>; cartOpen: boolean };
 
-let state: State = { flavor: "vanilla", cart: { vanilla: 0, chocolate: 0 }, cartOpen: false };
+let state: State = { flavor: "vanilla", cart: { vanilla: 0, chocolate: 0, strawberry: 0 }, cartOpen: false };
 const listeners = new Set<() => void>();
 
 export const store = {

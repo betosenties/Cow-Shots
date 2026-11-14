@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { gsap, SplitText } from "@/lib/gsap";
+import { flavors } from "@/lib/content";
 import { palette } from "@/lib/palette";
 import type { Flavor } from "@/lib/store";
 
@@ -129,7 +130,7 @@ export function Cursor() {
 
 /* 2D product illustration of a filled shot, with animated milk wave */
 export function ShotIllustration({ flavor, className = "" }: { flavor: Flavor; className?: string }) {
-  const fill = flavor === "chocolate" ? palette.chocolate : palette.vanilla;
+  const fill = flavors[flavor].milk;
   const id = `clip-${flavor}`;
   return (
     <svg viewBox="0 0 200 260" className={className} aria-hidden>

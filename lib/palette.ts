@@ -7,5 +7,6 @@ export const palette = {
   sand: "#E6DAC4", // darker shade of the cream for borders / shadows
   vanilla: "#E8D7B0", // milk colour, matched to the product photo
   chocolate: "#5B3A29",
+  strawberry: "#E8857F", // milk colour, matched to the product photo
   cap: "#13204A", // navy bottle cap
 } as const;

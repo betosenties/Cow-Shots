@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
+import { flavors } from "@/lib/content";
 import { palette } from "@/lib/palette";
 import { frame, store } from "@/lib/store";
 
@@ -83,7 +84,7 @@ export function useLabelTexture() {
         ctx.fillText("CALOSTRO BOVINO", cx, 600);
         ctx.fillText("LISTO PARA TOMAR", cx, 648);
         ctx.font = `110px ${display}, Impact, sans-serif`;
-        ctx.fillText(flavor === "chocolate" ? "CHOCOLATE" : "VAINILLA", cx, 830);
+        ctx.fillText(flavors[flavor].name.toUpperCase(), cx, 830);
         ctx.font = `500 30px ${body}, sans-serif`;
         ctx.fillText("60 mL", cx, 960);
       };
@@ -270,6 +271,7 @@ function Bottle() {
     () => ({
       vanilla: new THREE.Color(palette.vanilla),
       chocolate: new THREE.Color(palette.chocolate),
+      strawberry: new THREE.Color(palette.strawberry),
       target: new THREE.Color(),
     }),
     [],
@@ -288,7 +290,7 @@ function Bottle() {
       g.position.set(0, 0, 0);
       g.scale.setScalar(0.56);
       g.rotation.set(0.04, -0.3, 0);
-      liquidMat.current?.color.set(store.get().flavor === "chocolate" ? palette.chocolate : palette.vanilla);
+      liquidMat.current?.color.set(flavors[store.get().flavor].milk);
       return;
     }
     const move = smooth(0.12, 0.3, p);
@@ -304,9 +306,15 @@ function Bottle() {
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, Math.sin(t * 0.6) * 0.05 - frame.mouseX * 0.08, 3, delta);
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.06 + frame.mouseY * 0.06, 3, delta);
 
-    // milk colour follows the chosen flavour, plus a chocolate turn during the "dos sabores" chapter
-    const chocoMix = store.get().flavor === "chocolate" ? 1 : smooth(0.62, 0.7, p) * (1 - smooth(0.8, 0.88, p));
-    colors.target.copy(colors.vanilla).lerp(colors.chocolate, chocoMix);
+    // milk colour follows the chosen flavour; with the default vanilla it turns chocolate and then
+    // strawberry during the "tres sabores" chapter
+    const flavor = store.get().flavor;
+    colors.target.copy(colors[flavor]);
+    if (flavor === "vanilla") {
+      const toStrawberry = smooth(0.71, 0.76, p) * (1 - smooth(0.82, 0.88, p));
+      const chocoMix = smooth(0.62, 0.68, p) * (1 - smooth(0.71, 0.76, p));
+      colors.target.lerp(colors.chocolate, chocoMix).lerp(colors.strawberry, toStrawberry);
+    }
     liquidMat.current?.color.lerp(colors.target, 1 - Math.exp(-delta * 4));
   });
 
