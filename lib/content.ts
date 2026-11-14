@@ -3,6 +3,7 @@
 // `pending` are still waiting for confirmed data from the team.
 
 import type { Flavor } from "./store";
+import { palette } from "./palette";
 
 export const brand = {
   name: "COW SHOTS",
@@ -19,10 +20,14 @@ export const pack = {
   currency: "MXN",
 };
 
-export const flavors: Record<Flavor, { name: string }> = {
-  vanilla: { name: "Vainilla" },
-  chocolate: { name: "Chocolate" },
+export const flavors: Record<Flavor, { name: string; photo: string; liquid: string; accent: string }> = {
+  vanilla: { name: "Vainilla", photo: "brand/bottle-vainilla.jpg", liquid: palette.vanilla, accent: palette.cobalt },
+  chocolate: { name: "Chocolate", photo: "brand/bottle-chocolate.jpg", liquid: palette.chocolate, accent: palette.chocolate },
+  strawberry: { name: "Fresa", photo: "brand/bottle-fresa.jpg", liquid: palette.strawberry, accent: palette.strawberryInk },
 };
+
+export const flavorList = Object.keys(flavors) as Flavor[];
+export const flavorNames = "Vainilla, Chocolate y Fresa";
 
 export const formatPrice = (n: number) =>
   `$${n.toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${pack.currency}`;
@@ -48,8 +53,8 @@ export const story = [
   },
   {
     n: "04",
-    kicker: "Dos sabores",
-    title: "Vainilla y Chocolate.",
+    kicker: "Tres sabores",
+    title: "Vainilla, Chocolate y Fresa.",
     body: "Paquetes de 3 shots de 60 mL. Fáciles de llevar al gimnasio, a la escuela o a donde vayas.",
   },
 ];

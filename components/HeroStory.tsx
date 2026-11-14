@@ -124,7 +124,8 @@ export default function HeroStory() {
               <p className="mb-2 font-display text-2xl tracking-wide text-cream">{brand.slogan.toUpperCase()}</p>
               <p className="text-sm leading-relaxed text-cream/80">
                 Calostro bovino <strong className="text-cream">líquido y listo para tomar</strong>, en sabores{" "}
-                <strong className="text-cream">Vainilla</strong> y <strong className="text-cream">Chocolate</strong>.
+                <strong className="text-cream">Vainilla</strong>, <strong className="text-cream">Chocolate</strong> y{" "}
+                <strong className="text-cream">Fresa</strong>.
               </p>
             </div>
             <div className="flex items-center gap-4">

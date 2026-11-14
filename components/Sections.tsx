@@ -11,6 +11,8 @@ import {
   business,
   competitors,
   features,
+  flavorList,
+  flavorNames,
   flavors,
   formatPrice,
   pack,
@@ -40,7 +42,7 @@ function Eyebrow({ children, light = false }: { children: React.ReactNode; light
 /* ---------------- marquee band ---------------- */
 
 export function Marquee({ inverted = false }: { inverted?: boolean }) {
-  const words = ["Calostro bovino", "✦", "Vainilla", "✦", "Chocolate", "✦", "Listo para tomar", "✦", "Fuel. Grow. Perform.", "✦"];
+  const words = ["Calostro bovino", "✦", "Vainilla", "✦", "Chocolate", "✦", "Fresa", "✦", "Listo para tomar", "✦", "Fuel. Grow. Perform.", "✦"];
   return (
     <div
       className={`overflow-hidden border-y py-5 ${
@@ -90,7 +92,7 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 export function Product() {
   const flavor = useStore((s) => s.flavor);
   const [qty, setQty] = useState(1);
-  const choco = flavor === "chocolate";
+  const accent = flavors[flavor].accent;
 
   return (
     <section id="producto" className="paper relative px-4 py-28 md:px-8 md:py-36">
@@ -111,7 +113,7 @@ export function Product() {
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.img
                   key={flavor}
-                  src={choco ? "brand/bottle-chocolate.jpg" : "brand/bottle-vainilla.jpg"}
+                  src={flavors[flavor].photo}
                   alt={`Botella de COW SHOTS sabor ${flavors[flavor].name}`}
                   initial={{ opacity: 0, scale: 1.04 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -128,17 +130,18 @@ export function Product() {
 
           <motion.div {...rise(1)} className="flex flex-col gap-8">
             <div className="inline-flex self-start rounded-full border border-cobalt/25 p-1">
-              {(Object.keys(flavors) as Flavor[]).map((f) => (
+              {flavorList.map((f) => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => store.set({ flavor: f })}
-                  className="relative rounded-full px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+                  className="relative rounded-full px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] sm:px-6 sm:text-xs sm:tracking-[0.2em]"
                 >
                   {flavor === f && (
                     <motion.span
                       layoutId="flavor-pill"
-                      className={`absolute inset-0 rounded-full ${f === "chocolate" ? "bg-chocolate" : "bg-cobalt"}`}
+                      className="absolute inset-0 rounded-full"
+                      style={{ backgroundColor: flavors[f].accent }}
                       transition={{ type: "spring", stiffness: 300, damping: 28 }}
                     />
                   )}
@@ -155,7 +158,8 @@ export function Product() {
                   animate={{ y: "0%" }}
                   exit={{ y: "-100%" }}
                   transition={{ duration: 0.7, ease }}
-                  className={`absolute font-display text-[17vw] uppercase leading-[0.9] lg:text-[8vw] ${choco ? "text-chocolate" : ""}`}
+                  className="absolute font-display text-[17vw] uppercase leading-[0.9] lg:text-[8vw]"
+                  style={{ color: accent }}
                 >
                   {flavors[flavor].name}
                 </motion.h3>
@@ -193,6 +197,49 @@ export function Product() {
             <p className="text-xs text-cobalt/60">Pago con {business.payments.join(", ").toLowerCase()}.</p>
           </motion.div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------- the three flavours together ---------------- */
+
+export function FlavorTrio() {
+  return (
+    <section id="sabores" className="weave relative px-4 py-28 text-cream md:px-8 md:py-36">
+      <div className="mx-auto grid max-w-[1400px] items-center gap-12 lg:grid-cols-[1fr_1.15fr]">
+        <div className="flex flex-col gap-8">
+          <div>
+            <Eyebrow light>Los sabores</Eyebrow>
+            <SplitReveal className="font-display text-[16vw] uppercase leading-[0.85] md:text-[7.5vw]">Tres sabores.</SplitReveal>
+          </div>
+          <p className="max-w-md text-base leading-relaxed text-cream/80">
+            {flavorNames}. El mismo calostro bovino, listo para tomar, en el sabor que más te guste.
+          </p>
+          <ul className="flex flex-wrap gap-3">
+            {flavorList.map((f, i) => (
+              <motion.li key={f} {...rise(i)}>
+                <a
+                  href="#producto"
+                  onClick={() => store.set({ flavor: f })}
+                  className="flex items-center gap-3 rounded-full border border-cream/30 py-2 pl-2 pr-5 text-sm font-semibold uppercase tracking-[0.15em] transition-colors hover:bg-cream hover:text-cobalt"
+                >
+                  <span className="h-7 w-7 rounded-full border border-cream/40" style={{ backgroundColor: flavors[f].liquid }} />
+                  {flavors[f].name}
+                </a>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+        <motion.div {...rise(1)}>
+          <TiltCard className="overflow-hidden rounded-[2.5rem] shadow-[0_40px_80px_-40px_rgba(0,0,0,0.6)]">
+            <img
+              src="brand/sabores.jpg"
+              alt="Tres botellas de COW SHOTS: Chocolate, Vainilla y Fresa"
+              className="aspect-square w-full object-cover"
+            />
+          </TiltCard>
+        </motion.div>
       </div>
     </section>
   );

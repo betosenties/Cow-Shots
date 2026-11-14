@@ -1,7 +1,7 @@
 import HeroStory from "@/components/HeroStory";
 import PackStory from "@/components/PackStory";
 import { CartDrawer, Nav, Preloader } from "@/components/Chrome";
-import { About, Benefits, Comparison, Footer, HowToBuy, Marquee, Product, Team } from "@/components/Sections";
+import { About, Benefits, Comparison, FlavorTrio, Footer, HowToBuy, Marquee, Product, Team } from "@/components/Sections";
 import { Cursor } from "@/components/ui";
 
 export default function Home() {
@@ -15,6 +15,7 @@ export default function Home() {
         <HeroStory />
         <Marquee />
         <Product />
+        <FlavorTrio />
         <PackStory />
         <Benefits />
         <Comparison />

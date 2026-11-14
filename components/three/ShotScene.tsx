@@ -5,7 +5,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 import { palette } from "@/lib/palette";
-import { frame, store } from "@/lib/store";
+import { frame, store, type Flavor } from "@/lib/store";
+import { flavors } from "@/lib/content";
 
 /* ---------- geometry profiles (y = height, x = radius) ---------- */
 // Proportions measured from the product photo: body radius = 1 unit.
@@ -34,7 +35,10 @@ const smooth = (a: number, b: number, x: number) => {
 
 /* ---------- paper label like the product photo: gold frame, logo front and back ---------- */
 
-export function useLabelTexture() {
+// `tour`: the hero bottle also follows the flavour shown by the "tres sabores" chapter
+export function useLabelTexture(tour = false) {
+  const drawn = useRef<Flavor | null>(null);
+  const redraw = useRef<((f: Flavor) => void) | null>(null);
   const texture = useMemo(() => {
     const canvas = document.createElement("canvas");
     // label circumference (2π·1.004) : height (3.6) ≈ 1.75 : 1
@@ -49,7 +53,7 @@ export function useLabelTexture() {
   useEffect(() => {
     const logo = new Image();
     logo.src = "brand/mark-deep.svg";
-    let flavor = store.get().flavor;
+    let flavor: Flavor = store.get().flavor;
 
     const draw = () => {
       const canvas = texture.image as HTMLCanvasElement;
@@ -83,7 +87,7 @@ export function useLabelTexture() {
         ctx.fillText("CALOSTRO BOVINO", cx, 600);
         ctx.fillText("LISTO PARA TOMAR", cx, 648);
         ctx.font = `110px ${display}, Impact, sans-serif`;
-        ctx.fillText(flavor === "chocolate" ? "CHOCOLATE" : "VAINILLA", cx, 830);
+        ctx.fillText(flavors[flavor].name.toUpperCase(), cx, 830);
         ctx.font = `500 30px ${body}, sans-serif`;
         ctx.fillText("60 mL", cx, 960);
       };
@@ -105,16 +109,22 @@ export function useLabelTexture() {
     logo.onload = draw;
     draw();
     document.fonts?.ready.then(draw);
-    const unsub = store.subscribe(() => {
-      if (store.get().flavor !== flavor) {
-        flavor = store.get().flavor;
-        draw();
-      }
-    });
+    drawn.current = flavor;
+    redraw.current = (f) => {
+      flavor = f;
+      drawn.current = f;
+      draw();
+    };
     return () => {
-      unsub();
+      redraw.current = null;
     };
   }, [texture]);
+
+  // repaint the flavour name when the chosen (or toured) flavour changes
+  useFrame(() => {
+    const want = (tour && frame.tourFlavor) || store.get().flavor;
+    if (want !== drawn.current) redraw.current?.(want);
+  });
 
   return texture;
 }
@@ -264,16 +274,8 @@ function Bottle() {
   const group = useRef<THREE.Group>(null);
   const liquidMat = useRef<THREE.MeshPhysicalMaterial>(null);
   const { viewport } = useThree();
-  const label = useLabelTexture();
-
-  const colors = useMemo(
-    () => ({
-      vanilla: new THREE.Color(palette.vanilla),
-      chocolate: new THREE.Color(palette.chocolate),
-      target: new THREE.Color(),
-    }),
-    [],
-  );
+  const label = useLabelTexture(true);
+  const target = useMemo(() => new THREE.Color(), []);
 
   useFrame((state, delta) => {
     const g = group.current;
@@ -288,7 +290,7 @@ function Bottle() {
       g.position.set(0, 0, 0);
       g.scale.setScalar(0.56);
       g.rotation.set(0.04, -0.3, 0);
-      liquidMat.current?.color.set(store.get().flavor === "chocolate" ? palette.chocolate : palette.vanilla);
+      liquidMat.current?.color.set(flavors[store.get().flavor].liquid);
       return;
     }
     const move = smooth(0.12, 0.3, p);
@@ -304,10 +306,11 @@ function Bottle() {
     g.rotation.z = THREE.MathUtils.damp(g.rotation.z, Math.sin(t * 0.6) * 0.05 - frame.mouseX * 0.08, 3, delta);
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.06 + frame.mouseY * 0.06, 3, delta);
 
-    // milk colour follows the chosen flavour, plus a chocolate turn during the "dos sabores" chapter
-    const chocoMix = store.get().flavor === "chocolate" ? 1 : smooth(0.62, 0.7, p) * (1 - smooth(0.8, 0.88, p));
-    colors.target.copy(colors.vanilla).lerp(colors.chocolate, chocoMix);
-    liquidMat.current?.color.lerp(colors.target, 1 - Math.exp(-delta * 4));
+    // milk follows the chosen flavour; the "tres sabores" chapter tours vanilla → chocolate → strawberry
+    // (chapter 04 fills the screen over the last quarter of the hero's scroll)
+    frame.tourFlavor = p > 0.78 && p < 0.85 ? "vanilla" : p >= 0.85 && p < 0.91 ? "chocolate" : p >= 0.91 && p < 0.97 ? "strawberry" : null;
+    target.set(flavors[frame.tourFlavor ?? store.get().flavor].liquid);
+    liquidMat.current?.color.lerp(target, 1 - Math.exp(-delta * 5));
   });
 
   return (

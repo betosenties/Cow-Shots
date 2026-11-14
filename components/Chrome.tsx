@@ -53,6 +53,7 @@ export function Preloader() {
 
 const links = [
   ["Producto", "#producto"],
+  ["Sabores", "#sabores"],
   ["Empaque", "#empaque"],
   ["Beneficios", "#beneficios"],
   ["¿Por qué nosotros?", "#comparativa"],
@@ -61,7 +62,7 @@ const links = [
 
 export function Nav() {
   const cart = useStore((s) => s.cart);
-  const qty = cart.vanilla + cart.chocolate;
+  const qty = Object.values(cart).reduce((a, b) => a + b, 0);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -159,7 +160,7 @@ export function CartDrawer() {
   const { cart, cartOpen } = useStore((s) => s);
   const [notice, setNotice] = useState(false);
   const items = (Object.keys(cart) as Flavor[]).filter((f) => cart[f] > 0);
-  const total = (cart.vanilla + cart.chocolate) * pack.price;
+  const total = Object.values(cart).reduce((a, b) => a + b, 0) * pack.price;
 
   return (
     <AnimatePresence>
@@ -201,7 +202,7 @@ export function CartDrawer() {
                     exit={{ opacity: 0, x: 40 }}
                     className="flex items-center gap-4 rounded-3xl border border-cobalt/15 p-4"
                   >
-                    <img src={f === "chocolate" ? "brand/bottle-chocolate.jpg" : "brand/bottle-vainilla.jpg"} alt="" className="h-20 w-16 rounded-2xl object-cover" />
+                    <img src={flavors[f].photo} alt="" className="h-20 w-16 rounded-2xl object-cover" />
                     <div className="flex-1">
                       <p className="font-display text-2xl">{flavors[f].name.toUpperCase()}</p>
                       <p className="text-xs opacity-70">
